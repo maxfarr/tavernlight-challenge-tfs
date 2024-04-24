@@ -66,6 +66,7 @@ function printSmallGuildNames(memberCount)
     local resultId = db.storeQuery(string.format(selectGuildQuery, memberCount))
 
     if resultId then
+        -- consume and print all selected rows
         repeat
             local guildName = result.getString(resultId, "name")
             print(guildName)
@@ -170,6 +171,7 @@ void Game::addItemToPlayer(const std::string& recipient, uint16_t itemId)
     Player\* player = g_game.getPlayerByName(recipient);
     if (!player) {
         player = new Player(nullptr);
+        -- check to ensure we can load player with provided name
         if (!IOLoginData::loadPlayerByName(player, recipient)) {
             delete player;
             return;
@@ -181,6 +183,7 @@ void Game::addItemToPlayer(const std::string& recipient, uint16_t itemId)
         return;
     }
 
+    -- add item, decrement item ref count to indicate we are done with it
     g_game.internalAddItem(player->getInbox(), item, INDEX_WHEREEVER, FLAG_NOLIMIT);
     item->decrementReferenceCounter();
 
