@@ -30,7 +30,7 @@ local function releaseStorage(player)
 end
 
 function onLogout(player)
-    if player:getStorageValue(PLAYER_STORAGE_ID) != -1 then
+    if player:getStorageValue(PLAYER_STORAGE_ID) ~= -1 then
         releaseStorage(player)
     end
     return true
@@ -117,7 +117,7 @@ function kickPartyMember(playerId, memberName)
         return
     end
 
-    if party:getLeader() != player then
+    if party:getLeader() ~= player then
         print(“Player id=%d is not the leader of their party.”, playerId)
         return
     end
