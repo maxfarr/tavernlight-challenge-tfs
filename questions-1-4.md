@@ -16,7 +16,8 @@ end
 ## Comments:
 
 This function is problematic because it attempts to setStorageValue on a player who is already logged out due to the 1-second wait. We could use a database query to update the value after the player is logged out, but without any further context, I’m assuming the intention is to clear the value right away. In that case, we can clear the storage right away before the logout completes.
-We can also check for any value which is not -1, in case we want to store values besides 1 later on.
+
+We can also check for any value which is not -1, in case we want to store values other than 1 later on.
 Finally, we should factor out the magic number.
 
 ## Fixed:
@@ -159,7 +160,7 @@ IOLoginData::savePlayer(player);
 
 ## Comments:
 
-In the case where we can’t find the login data for the player, we need to delete the Player we just allocated. We don’t need to do the same for item, however, because if we get a nullptr, there’s nothing to delete.
+In the case where we can’t find the login data for the player, we need to delete the Player we just allocated. For item, we shouldn't necessarily delete the memory outright, but we should call decrementReferenceCounter in case we are the final owners of the pointer after calling internalAddItem.
 
 ## Fixed:
 
@@ -181,6 +182,7 @@ void Game::addItemToPlayer(const std::string& recipient, uint16_t itemId)
     }
 
     g_game.internalAddItem(player->getInbox(), item, INDEX_WHEREEVER, FLAG_NOLIMIT);
+    item->decrementReferenceCounter();
 
     if (player->isOffline()) {
         IOLoginData::savePlayer(player);
